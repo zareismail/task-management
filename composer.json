@@ -1,0 +1,32 @@
+{
+    "name": "zareismail/task-management",
+    "description": "A Laravel Nova tool.",
+    "keywords": [
+        "laravel",
+        "nova"
+    ],
+    "license": "MIT",
+    "require": {
+        "php": ">=7.1.0",
+        "zareismail/nova-contracts": "~0.8",
+        "zareismail/markable": "~0.1",
+        "zareismail/nova-priority": "*"
+    },
+    "autoload": {
+        "psr-4": {
+            "Zareismail\\Task\\": "src/"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Zareismail\\Task\\ServiceProvider"
+            ]
+        }
+    },
+    "config": {
+        "sort-packages": true
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true
+}
