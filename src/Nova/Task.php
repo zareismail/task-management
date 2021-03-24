@@ -202,6 +202,21 @@ class Task extends Resource
     } 
 
     /**
+     * Get the cards available for the request.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return array
+     */
+    public function cards(Request $request)
+    {
+        return [
+            Metrics\TasksPerType::make(),
+            Metrics\TasksPerStatus::make(),
+            Metrics\TasksPerPriority::make(),
+        ];
+    }
+
+    /**
      * Get the filters available for the resource.
      *
      * @param  \Illuminate\Http\Request  $request
