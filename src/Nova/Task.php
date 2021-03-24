@@ -67,6 +67,7 @@ class Task extends Resource
             // })->onlyOnIndex(),
 
             Badge::make(__('Status'), 'marked_as')
+                ->sortable()
                 ->addTypes([ 
                     'draft' => 'bg-60 text-90',
                     'accepted'=> 'bg-info-light text-success-dark'
@@ -80,7 +81,8 @@ class Task extends Resource
                 ]),
 
             static::datetimeField(__('Created At'), 'created_at') 
-                ->exceptOnForms(),
+                ->exceptOnForms()
+                ->sortable(),
 
             static::datetimeField(__('Updated At'), 'updated_at') 
                 ->onlyOnDetail(),
@@ -88,6 +90,7 @@ class Task extends Resource
             BelongsTo::make(__('Higher Task'), 'task', static::class)
                 ->withoutTrashed()
                 ->nullable()
+                ->sortable()
                 ->canSee(function($request) {
                     return $request->viaResource() == static::uriKey();
                 }),
@@ -105,12 +108,14 @@ class Task extends Resource
                 ->showCreateRelationButton()
                 ->withoutTrashed()
                 ->searchable()
+                ->sortable()
                 ->required()
                 ->rules('required'),
 
             BelongsTo::make(__('Task Priority'), 'priority', Priority::class)
                 ->showCreateRelationButton()
                 ->withoutTrashed()
+                ->sortable()
                 ->required()
                 ->rules('required'),
 
@@ -195,6 +200,22 @@ class Task extends Resource
             });
         });
     } 
+
+    /**
+     * Get the filters available for the resource.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return array
+     */
+    public function filters(Request $request)
+    {
+        return [
+            Filters\Status::make(),
+            Filters\Priority::make(),
+            Filters\Agent::make(), 
+            Filters\Type::make(),
+        ];
+    }
 
     /**
      * Get the actions available for the resource.
