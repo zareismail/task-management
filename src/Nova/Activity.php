@@ -3,7 +3,7 @@
 namespace Zareismail\Task\Nova;
 
 use Illuminate\Http\Request;
-use Laravel\Nova\Fields\Trix;
+use Laravel\Nova\Fields\{Text, Trix};
 use Laravel\Nova\Actions\ActionResource;
 
 class Activity extends ActionResource
@@ -47,6 +47,10 @@ class Activity extends ActionResource
         return array_merge($fields, [
             
             Resource::datetimeField(__('Action Happened At'), 'created_at')->exceptOnForms(),
+
+            Text::make(__('Note'), function() {
+                return data_get(unserialize($this->fields), 'note');
+            })->onlyOnIndex()->asHtml(),
 
             Trix::make(__('Note'), function() {
                 return data_get(unserialize($this->fields), 'note');
