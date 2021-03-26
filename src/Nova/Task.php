@@ -186,22 +186,6 @@ class Task extends Resource
     }
 
     /**
-     * Authenticate the query for the given request.
-     *
-     * @param  \Laravel\Nova\Http\Requests\NovaRequest  $request
-     * @param  \Illuminate\Database\Eloquent\Builder  $query
-     * @return \Illuminate\Database\Eloquent\Builder
-     */
-    public static function authenticateQuery(NovaRequest $request, $query)
-    {
-        return $query->where(function($query) use ($request) {
-            $query->when(static::shouldAuthenticate($request), function($query) {
-                $query->authenticate()->orWhere->authenticateAgent();
-            });
-        });
-    } 
-
-    /**
      * Get the cards available for the request.
      *
      * @param  \Illuminate\Http\Request  $request
