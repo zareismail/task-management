@@ -100,14 +100,12 @@ class Task extends Resource
                 ->showCreateRelationButton()
                 ->withoutTrashed()
                 // ->hideFromIndex()
-                ->searchable()
                 ->required()
                 ->rules('required'),
 
             BelongsTo::make(__('Agent'), 'agent', User::class)
                 ->showCreateRelationButton()
                 ->withoutTrashed()
-                ->searchable()
                 ->sortable()
                 ->required()
                 ->rules('required'),
