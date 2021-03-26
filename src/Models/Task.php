@@ -114,9 +114,9 @@ class Task extends AuthorizableModel
     public function referTo(Authenticatable $user)
     {
         return \DB::transaction(function() use ($user) {
-            $this->tasks()->authenticate($this->auth)->get()->each->referTo($user);
+            $this->tasks()->authenticate($this->agent)->get()->each->referTo($user);
 
-            return $this->auth()->associate($user)->publish();
+            return $this->agent()->associate($user)->publish();
         }); 
     }
 }
