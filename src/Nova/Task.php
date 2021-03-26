@@ -238,7 +238,18 @@ class Task extends Resource
      */
     public function actions(Request $request)
     {
-        return [
+        return [ 
+            Actions\AddNote::make()
+                ->onlyOnDetail()
+                ->showOnTableRow()
+                ->canSee(function($request) {
+                    if ($request instanceof ActionRequest) {
+                        return true;  
+                    }
+
+                    return ! optional($this->resource)->isCompleted();
+                }),
+
             Actions\Publish::make()
                 ->onlyOnDetail()
                 ->showOnTableRow()
