@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateTaskReferrersTable extends Migration
+class CreateTaskSubstitutesTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,7 +13,7 @@ class CreateTaskReferrersTable extends Migration
      */
     public function up()
     {
-        Schema::create('task_referrers', function (Blueprint $table) {
+        Schema::create('task_substitutes', function (Blueprint $table) {
             $table->id();
             $table->foreignId('agent_id'); 
             $table->foreignId('user_id'); 
@@ -28,6 +28,6 @@ class CreateTaskReferrersTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('task_referrers');
+        Schema::dropIfExists('task_substitutes');
     }
 }
