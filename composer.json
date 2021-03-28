@@ -8,6 +8,7 @@
     "license": "MIT",
     "require": {
         "php": ">=7.1.0",
+        "benjacho/belongs-to-many-field": "~1.8",
         "zareismail/nova-contracts": "~0.8",
         "zareismail/markable": "~0.1",
         "zareismail/nova-priority": "*"
