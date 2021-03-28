@@ -19,7 +19,7 @@ class CreateTasksTable extends Migration
             $table->foreignId('task_id')->nullable()->constrained('tasks');
             $table->foreignId('priority_id')->constrained('nova_priorities');
             $table->auth();
-            $table->auth('agent');
+            $table->morphs('member');
             $table->morphs('taskable');
             $table->string('marked_as')->default('draft');
             $table->text('note')->nullable();

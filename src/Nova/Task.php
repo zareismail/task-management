@@ -103,10 +103,10 @@ class Task extends Resource
                 ->required()
                 ->rules('required'),
 
-            BelongsTo::make(__('Agent'), 'agent', User::class)
+            MorphTo::make(__('Member'), 'member')
+                ->types([User::class, Team::class])
                 ->showCreateRelationButton()
-                ->withoutTrashed()
-                ->sortable()
+                ->withoutTrashed() 
                 ->required()
                 ->rules('required'),
 
@@ -178,9 +178,14 @@ class Task extends Resource
      */
     public static function indexQuery(NovaRequest $request, $query)
     {
-        return $query->with('agent', 'task', 'tasks')->with('taskable', function($morphTo) {
-            $morphTo->morphWith(Helper::morphs());
-        });
+        return $query
+                    ->with('task', 'tasks')
+                    ->with('taskable', function($morphTo) {
+                        $morphTo->morphWith(Helper::morphs());
+                    })
+                    ->with('member', function($morphTo) {
+                        $morphTo->morphWith([User::class, Team::class]);
+                    });
     }
 
     /**
@@ -194,7 +199,7 @@ class Task extends Resource
     {
         return $query->where(function($query) use ($request) {
             $query->when(static::shouldAuthenticate($request), function($query) {
-                $query->authenticate()->orWhere->authenticateAgent();
+                $query->authenticate()->orWhere->hasMemberAccess();
             });
         });
     } 
@@ -225,7 +230,7 @@ class Task extends Resource
         return [
             Filters\Status::make(),
             Filters\Priority::make(),
-            Filters\Agent::make(), 
+            Filters\Member::make(), 
             Filters\Type::make(),
         ];
     }
@@ -362,14 +367,15 @@ class Task extends Resource
 
     public function userCanRunAction(Request $request, $resource)
     {
-        if (is_null($resource->agent)) {
+        if (is_null($resource->member)) {
             return false;
         }
 
-        if ($request->user()->is($resource->agent)) {
+        if ($request->user()->is($resource->member)) {
             return true;
-        }
+        } 
         
-        return $request->user()->referrers->filter->is($resource->agent)->isNotEmpty();
+        return  $request->user()->referrers->filter->is($resource->member)->isNotEmpty() ||
+                $request->user()->teams->filter->is($resource->member)->isNotEmpty();
     }
 }

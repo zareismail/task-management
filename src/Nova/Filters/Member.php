@@ -5,8 +5,9 @@ namespace Zareismail\Task\Nova\Filters;
 use Illuminate\Http\Request;
 use Laravel\Nova\Filters\Filter; 
 use Laravel\Nova\Nova; 
+use Zareismail\Task\Nova\Team;
 
-class Agent extends Filter
+class Member extends Filter
 {
     /**
      * The filter's component.
@@ -25,7 +26,7 @@ class Agent extends Filter
      */
     public function apply(Request $request, $query, $value)
     {
-        return $query->whereAgentId($value);
+        return $query->whereMemberType($value);
     }
 
     /**
@@ -38,6 +39,9 @@ class Agent extends Filter
     {
         $userResource = Nova::resourceForModel(config('zareismail.user'));
 
-        return $userResource::newModel()->get()->mapInto($userResource)->keyBy->title()->map->getKey();
+        return [
+            $userResource::label() => $userResource::newModel()->getMorphClass(),
+            Team::label() => Team::newModel()->getMorphClass(),
+        ];
     }
 }

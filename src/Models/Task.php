@@ -59,9 +59,9 @@ class Task extends AuthorizableModel
      * 
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
-    public function agent()
+    public function member()
     {
-    	return $this->authenticatable('agent_id');
+    	return $this->morphTo();
     }
 
     /**
@@ -75,15 +75,28 @@ class Task extends AuthorizableModel
     }
 
     /**
-     * Query the related User.
+     * Query where has member access.
+     * 
+     * @param \Illuminate\Database\Eloquent\Builder $query
+     * @return \Illuminate\Database\Eloquent\Builder $query 
+     */
+    public function scopeHasMemberAccess($query)
+    {
+        return $query->member()->orWhere->substitute()->orWhere->team();
+    }
+
+    /**
+     * Query the related TaskTeam.
      *  
      * @param \Illuminate\Database\Eloquent\Builder $query
      * @return \Illuminate\Database\Eloquent\Builder $query 
      */
-    public function scopeAuthenticateAgent($query)
+    public function scopeTeam($query)
     { 
-        return $query->where('agent_id', optional(request()->user())->getKey())
-                     ->orWhere->agentPlaceholder();
+        return $query->where(function($query) {
+            $query->where('member_type', TaskTeam::class)
+                  ->whereIn('member_id', request()->user()->teams->modelKeys());
+        });
     }
 
     /**
@@ -92,9 +105,26 @@ class Task extends AuthorizableModel
      * @param \Illuminate\Database\Eloquent\Builder $query
      * @return \Illuminate\Database\Eloquent\Builder $query 
      */
-    public function scopeAgentPlaceholder($query)
-    { 
-        return $query->whereIn('agent_id', request()->user()->referrers->modelKeys());
+    public function scopeMember($query)
+    {  
+        return $query->where(function($query) {
+            $query->where('member_id', optional(request()->user())->getKey())
+                  ->where('member_type', optional(request()->user())->getMorphClass());
+        });
+    }
+
+    /**
+     * Query the related User.
+     *  
+     * @param \Illuminate\Database\Eloquent\Builder $query
+     * @return \Illuminate\Database\Eloquent\Builder $query 
+     */
+    public function scopeSubstitute($query)
+    {  
+        return $query->where(function($query) {
+            $query->whereIn('member_id', request()->user()->referrers->modelKeys())
+                  ->where('member_type', optional(request()->user())->getMorphClass());
+        });
     }
 
     /**
@@ -114,9 +144,9 @@ class Task extends AuthorizableModel
     public function referTo(Authenticatable $user)
     {
         return \DB::transaction(function() use ($user) {
-            $this->tasks()->authenticate($this->agent)->get()->each->referTo($user);
+            $this->tasks()->authenticate($this->member)->get()->each->referTo($user);
 
-            return $this->agent()->associate($user)->publish();
+            return $this->member()->associate($user)->publish();
         }); 
     }
 }
