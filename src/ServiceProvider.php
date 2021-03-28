@@ -19,26 +19,32 @@ class ServiceProvider extends LaravelServiceProvider implements DeferrableProvid
         $this->loadMigrationsFrom(__DIR__.'/../database/migrations');
 
         Gate::policy(Models\Task::class, Policies\Task::class);
+        Gate::policy(Models\TaskTeam::class, Policies\Team::class);
 
         LaravelNova::resources([
             Nova\Activity::class, 
+            Nova\Team::class,
             Nova\Task::class,
             Nova\Work::class,
         ]); 
 
         \Zareismail\NovaContracts\Models\User::resolveRelationUsing('referrers', function($userModel) {
             return $userModel
-                    ->belongsToMany(get_class($userModel), 'task_referrers', 'agent_id', 'user_id')
+                    ->belongsToMany($userModel, 'task_substitutes', 'agent_id', 'user_id')
                     ->withPivot('end_date')
                     ->wherePivot('end_date', '>=', now());
         }); 
 
         \Zareismail\NovaContracts\Models\User::resolveRelationUsing('substitutes', function($userModel) {
             return $userModel
-                    ->belongsToMany(get_class($userModel), 'task_referrers', 'user_id', 'agent_id')
+                    ->belongsToMany($userModel, 'task_substitutes', 'user_id', 'agent_id')
                     ->withPivot('end_date')
                     ->wherePivot('end_date', '>=', now());
         }); 
+
+        \Zareismail\NovaContracts\Models\User::resolveRelationUsing('teams', function($userModel) {
+            return $userModel->belongsToMany(Models\TaskTeam::class, 'task_team_user', 'user_id', 'task_team_id');
+        });   
     }
 
     /**
