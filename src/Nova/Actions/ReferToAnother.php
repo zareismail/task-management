@@ -3,9 +3,11 @@
 namespace Zareismail\Task\Nova\Actions;
  
 use Illuminate\Support\Collection;
+use Laravel\Nova\Nova;
 use Laravel\Nova\Actions\Action;
-use Laravel\Nova\Fields\{ActionFields, Select, Textarea};
+use Laravel\Nova\Fields\{ActionFields, Select, MorphTo, Textarea};
 use Zareismail\NovaContracts\Nova\User;
+use Zareismail\Task\Nova\Team;
 
 class ReferToAnother extends Action
 { 
@@ -18,7 +20,7 @@ class ReferToAnother extends Action
      */
     public function handle(ActionFields $fields, Collection $models)
     {  
-        $models->first()->referTo(User::newModel()->findOrFail($fields->user)); 
+        $models->first()->referTo($fields->member); 
     }
 
     /**
@@ -27,17 +29,34 @@ class ReferToAnother extends Action
      * @return array
      */
     public function fields()
-    {
-        return [ 
-            Select::make(__('User'), 'user') 
-                ->options(User::newModel()->whereKeyNot(request()->user()->id)->get()->mapInto(User::class)->keyBy->getKey()->map->title()->all())
-                ->displayUsingLabels()
-                ->searchable()
+    { 
+        $fields = [  
+            MorphTo::make(__('Member'), 'member')
+                ->types([User::class, Team::class])
+                ->showCreateRelationButton()
+                ->withoutTrashed() 
                 ->required()
-                ->rules('required'),
+                ->rules('required'), 
 
             Textarea::make(__('Note'), 'note')
                 ->nullable()
+                ->rules('required'),
         ];
+
+        if (request()->isMethod('get')) {
+            return $fields;
+        }
+
+        array_shift($fields);
+
+        return array_merge($fields, [
+            Textarea::make(__('Member'), 'member')  
+                ->rules('required')
+                ->fillUsing(function($request, $model, $attribute) {
+                    $resource = Nova::resourceForKey($request->get('member_type'));
+
+                    $model->member($resource::newModel()->findOrFail($request->get('member')));
+                }),
+        ]); 
     }
 }

@@ -138,15 +138,11 @@ class Task extends AuthorizableModel
     /**
      * Refers a Task to another user.
      * 
-     * @param  \Illuminate\Contracts\Auth\Authenticatable $user 
+     * @param  mixed $user 
      * @return $this       
      */
-    public function referTo(Authenticatable $user)
+    public function referTo($member)
     {
-        return \DB::transaction(function() use ($user) {
-            $this->tasks()->authenticate($this->member)->get()->each->referTo($user);
-
-            return $this->member()->associate($user)->publish();
-        }); 
+        return $this->member()->associate($member)->publish(); 
     }
 }
