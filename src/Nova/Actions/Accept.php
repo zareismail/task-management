@@ -2,8 +2,7 @@
 
 namespace Zareismail\Task\Nova\Actions;
  
-use Illuminate\Support\Collection;
-use Laravel\Nova\Actions\Action;
+use Illuminate\Support\Collection; 
 use Laravel\Nova\Fields\{ActionFields, Select};
 
 class Accept extends Action

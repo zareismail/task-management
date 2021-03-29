@@ -3,8 +3,7 @@
 namespace Zareismail\Task\Nova\Actions;
  
 use Illuminate\Support\Collection;
-use Laravel\Nova\Nova;
-use Laravel\Nova\Actions\Action;
+use Laravel\Nova\Nova; 
 use Laravel\Nova\Fields\ActionFields;
 use Zareismail\Task\Nova\Task;
 
