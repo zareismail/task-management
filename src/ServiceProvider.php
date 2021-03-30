@@ -17,6 +17,9 @@ class ServiceProvider extends LaravelServiceProvider implements DeferrableProvid
     public function register()
     {
         $this->loadMigrationsFrom(__DIR__.'/../database/migrations');
+        $this->registerDynamicRelationships();
+
+        Models\Task::observe(Observers\TaskObserver::class);
 
         Gate::policy(Models\Task::class, Policies\Task::class);
         Gate::policy(Models\TaskTeam::class, Policies\Team::class);
@@ -27,9 +30,15 @@ class ServiceProvider extends LaravelServiceProvider implements DeferrableProvid
             Nova\Task::class,
             Nova\Work::class,
         ]); 
+    }
 
-        Models\Task::observe(Observers\TaskObserver::class);
-
+    /**
+     * Register Dynamic user relationships.
+     * 
+     * @return $this
+     */
+    protected function registerDynamicRelationships()
+    { 
         \Zareismail\NovaContracts\Models\User::resolveRelationUsing('referrers', function($userModel) {
             return $userModel
                     ->belongsToMany($userModel, 'task_substitutes', 'agent_id', 'user_id')
@@ -47,6 +56,8 @@ class ServiceProvider extends LaravelServiceProvider implements DeferrableProvid
         \Zareismail\NovaContracts\Models\User::resolveRelationUsing('teams', function($userModel) {
             return $userModel->belongsToMany(Models\TaskTeam::class, 'task_team_user', 'user_id', 'task_team_id');
         });   
+
+        return $this;
     }
 
     /**
