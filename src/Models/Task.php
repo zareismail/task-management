@@ -145,4 +145,33 @@ class Task extends AuthorizableModel
     {
         return $this->member()->associate($member)->publish(); 
     }
+
+    /**
+     * Retruns array of task users models.
+     * 
+     * @return \Illuminate\Support\Collection
+     */
+    public function getMemberUsers()
+    {
+        return $this->member_type === config('zareismail.user')
+                 ? $this->newCollection([$this->member])
+                 : $this->member->members;
+    }
+
+    /**
+     * Send notification to the task users about task changes.
+     * 
+     * @param  string $actionName 
+     * @return $this             
+     */
+    public function notifyMembers($actionName)
+    { 
+        $this->getMemberUsers()->push($this->auth)->each(function($user) use ($actionName) {
+            if (request()->user()->isNot($user)) { 
+                $user->notify(new \Zareismail\Task\Notifications\ActionRunned($actionName, $this));
+            }
+        }); 
+
+        return $this;
+    }
 }

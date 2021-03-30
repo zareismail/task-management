@@ -28,6 +28,8 @@ class ServiceProvider extends LaravelServiceProvider implements DeferrableProvid
             Nova\Work::class,
         ]); 
 
+        Models\Task::observe(Observers\TaskObserver::class);
+
         \Zareismail\NovaContracts\Models\User::resolveRelationUsing('referrers', function($userModel) {
             return $userModel
                     ->belongsToMany($userModel, 'task_substitutes', 'agent_id', 'user_id')
