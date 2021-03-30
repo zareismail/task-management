@@ -64,6 +64,7 @@ class ActionRunned extends Notification
                     'action'=> $this->actionName,
                     'task'  => $taskResource->title(),
                 ])) 
+                ->routeDetail($taskResource::uriKey(), $this->task->getKey())
                 ->level('info')
                 ->showMarkAsRead()
                 ->toArray();
