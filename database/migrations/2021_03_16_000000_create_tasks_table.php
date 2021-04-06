@@ -23,6 +23,7 @@ class CreateTasksTable extends Migration
             $table->morphs('taskable');
             $table->string('marked_as')->default('draft');
             $table->text('note')->nullable();
+            $table->string('voice')->nullable();
             $table->timestamps();
             $table->softDeletes();
         });
