@@ -9,6 +9,7 @@ use Laravel\Nova\Http\Requests\ActionRequest;
 use Laravel\Nova\Fields\{ID, Badge, Text, Trix, Boolean, BelongsTo, MorphTo, HasMany};
 use Zareismail\NovaContracts\Nova\User;
 use Zareismail\NovaPriority\Nova\Priority;
+use Zareismail\Fields\VoiceRecorder;
 use Zareismail\Task\Helper;
 
 class Task extends Resource
@@ -116,6 +117,8 @@ class Task extends Resource
                 ->sortable()
                 ->required()
                 ->rules('required'),
+
+            VoiceRecorder::make(__('Voice'), 'voice'),
 
             Trix::make(__('Task Note'), 'note')
                 ->withFiles('public')

@@ -3,8 +3,9 @@
 namespace Zareismail\Task\Nova;
 
 use Illuminate\Http\Request;
-use Laravel\Nova\Fields\{Text, Trix};
+use Laravel\Nova\Fields\{Text, Trix, Boolean};
 use Laravel\Nova\Actions\ActionResource;
+use Zareismail\Fields\VoiceRecorder;
 
 class Activity extends ActionResource
 {  
@@ -55,6 +56,14 @@ class Activity extends ActionResource
             Trix::make(__('Note'), function() {
                 return data_get(unserialize($this->fields), 'note');
             })->alwaysShow(),
+
+            Boolean::make('Has Voice', function() {  
+                return data_get(unserialize($this->fields), 'voice') ? true : false;
+            }),
+
+            VoiceRecorder::make(__('Voice'), function() {  
+                return data_get(unserialize($this->fields), 'voice');
+            }), 
         ]);
     }
  

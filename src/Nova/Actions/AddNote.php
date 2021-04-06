@@ -4,6 +4,7 @@ namespace Zareismail\Task\Nova\Actions;
  
 use Illuminate\Support\Collection; 
 use Laravel\Nova\Fields\{ActionFields, Trix};
+use Zareismail\Fields\VoiceRecorder;
 
 class AddNote extends Action
 { 
@@ -28,7 +29,10 @@ class AddNote extends Action
         return [
             Trix::make(__('Note'), 'note')
                 ->required()
-                ->rules('required'),
+                ->rules('required_without:voice'),
+
+            VoiceRecorder::make(__('Voice'), 'voice')
+                ->nullable(),
         ];
     }
 }
