@@ -41,16 +41,16 @@ class ServiceProvider extends LaravelServiceProvider implements DeferrableProvid
     { 
         \Zareismail\NovaContracts\Models\User::resolveRelationUsing('referrers', function($userModel) {
             return $userModel
-                    ->belongsToMany($userModel, 'task_substitutes', 'agent_id', 'user_id')
-                    ->withPivot('end_date')
-                    ->wherePivot('end_date', '>=', now());
+            ->belongsToMany($userModel, 'task_substitutes', 'agent_id', 'user_id')
+            ->withPivot('end_date')
+            ->wherePivot('end_date', '>=', now());
         }); 
 
         \Zareismail\NovaContracts\Models\User::resolveRelationUsing('substitutes', function($userModel) {
             return $userModel
-                    ->belongsToMany($userModel, 'task_substitutes', 'user_id', 'agent_id')
-                    ->withPivot('end_date')
-                    ->wherePivot('end_date', '>=', now());
+            ->belongsToMany($userModel, 'task_substitutes', 'user_id', 'agent_id')
+            ->withPivot('end_date')
+            ->wherePivot('end_date', '>=', now());
         }); 
 
         \Zareismail\NovaContracts\Models\User::resolveRelationUsing('teams', function($userModel) {
