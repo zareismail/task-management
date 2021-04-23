@@ -9,7 +9,8 @@ use Laravel\Nova\Http\Requests\ActionRequest;
 use Laravel\Nova\Fields\{ID, Badge, Text, Trix, Boolean, BelongsTo, MorphTo, HasMany};
 use Zareismail\NovaContracts\Nova\User;
 use Zareismail\NovaPriority\Nova\Priority;
-use Zareismail\Fields\VoiceRecorder;
+use Zareismail\Fields\{VoiceRecorder, Board};
+use Zareismail\Cards\EventHistory;
 use Zareismail\Task\Helper;
 
 class Task extends Resource
@@ -61,6 +62,9 @@ class Task extends Resource
                 }),
 
             Text::make(__('Task Number'), 'tracking_code')
+                ->exceptOnForms(),
+
+            BelongsTo::make(__('Task Creator'), 'auth', User::class)
                 ->exceptOnForms(),
 
             // Text::make(__('Task Type'), function() {
@@ -134,7 +138,11 @@ class Task extends Resource
                     }
                 }),
 
-            HasMany::make(__('Activities'), 'activities', Activity::class),
+            Board::make(__('Activities'), [  
+                EventHistory::make()->onlyOnDetail(),
+            ]), 
+
+            // HasMany::make(__('Activities'), 'activities', Activity::class),
 
             HasMany::make(__('Tasks'), 'tasks', static::class)->canSee(function($request) {
                 return $request->viaResource() == static::uriKey();
