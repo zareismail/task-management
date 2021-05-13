@@ -139,7 +139,10 @@ class Task extends Resource
                 }),
 
             Board::make(__('Activities'), [  
-                EventHistory::make()->onlyOnDetail(),
+                EventHistory::make()
+                    ->actionResource(Activity::class)
+                    ->only(static::class)
+                    ->onlyOnDetail(),
             ]), 
 
             // HasMany::make(__('Activities'), 'activities', Activity::class),
